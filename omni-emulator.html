@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Omni Emulator — multi OS launcher</title>
+<style>
+  :root{font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial;background:#f5f7fb;color:#111}
+  body{margin:0;padding:18px;display:flex;flex-direction:column;gap:12px}
+  header{display:flex;align-items:center;gap:12px}
+  h1{font-size:1.2rem;margin:0}
+  .container{display:grid;grid-template-columns:320px 1fr;gap:14px;height:calc(100vh - 120px)}
+  .panel{background:#fff;border-radius:10px;padding:12px;box-shadow:0 6px 24px rgba(10,20,60,.06);overflow:auto}
+  .emulator-list button{display:block;width:100%;text-align:left;padding:10px;margin:6px 0;border-radius:8px;border:1px solid #eee;background:#fafbff;cursor:pointer}
+  .emulator-list button.active{background:#e8f0ff;border-color:#cfe0ff}
+  iframe.emframe{width:100%;height:100%;border:0;border-radius:8px;background:#000}
+  .small{font-size:.85rem;color:#5b6270}
+  footer{font-size:.85rem;color:#666}
+  .controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+  input[type=text]{width:100%;padding:8px;border:1px solid #ddd;border-radius:8px}
+  .inline-row{display:flex;gap:8px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Omni Emulator — Multi-Engine Classic OS Launcher</h1>
+  <div class="small">Load DOS, early Windows, old Linux, classic Mac, Flash, and more — replace URLs with your own disk images to self-host.</div>
+</header>
+<div class="container">
+  <aside class="panel">
+    <h3>Choose an emulator / OS</h3>
+    <div class="emulator-list" id="emulatorList"></div>
+    <div style="margin-top:12px">
+      <label class="small">Custom embed URL / image (paste emulator demo or image URL)</label>
+      <div class="inline-row" style="margin-top:6px">
+        <input id="customURL" placeholder="https://example.com/v86/?profile=linux" />
+        <button id="loadCustom">Load</button>
+      </div>
+    </div>
+  </aside>
+  <main class="panel" id="viewer">
+    <iframe id="emulatorFrame" class="emframe" srcdoc="<p style='color:#fff;padding:18px;font-family:system-ui'>Select an emulator from the left to start.</p>"></iframe>
+  </main>
+</div>
+<script>
+const emulators=[
+{id:'v86-linux',name:'v86 — Linux demo',url:'https://copy.sh/v86/?profile=linux'},
+{id:'v86-win95',name:'v86 — Windows 95 demo',url:'https://copy.sh/v86/?profile=win95'},
+{id:'jslinux',name:'JSLinux — various OS demos',url:'https://bellard.org/jslinux/'},
+{id:'jsdos',name:'js-dos — DOSBox demos',url:'https://js-dos.com/'},
+{id:'pcjs',name:'PCjs — IBM PC demos',url:'https://www.pcjs.org/'},
+{id:'ruffle',name:'Ruffle — Flash player demo',url:'https://ruffle.rs/demo/'}
+];
+const list=document.getElementById('emulatorList');
+const frame=document.getElementById('emulatorFrame');
+function setActive(id,url){document.querySelectorAll('#emulatorList button').forEach(b=>b.classList.toggle('active',b.dataset.id===id));frame.src=url;}
+emulators.forEach(em=>{const b=document.createElement('button');b.textContent=em.name;b.dataset.id=em.id;b.onclick=()=>setActive(em.id,em.url);list.appendChild(b);});
+document.getElementById('loadCustom').onclick=()=>{const v=document.getElementById('customURL').value.trim();if(!v)return alert('Paste a URL first');const m=v.match(/src\s*=\s*['"]([^'"]+)['"]/i);const src=m?m[1]:v;setActive('custom',src);};
+</script>
+</body>
+</html>
